@@ -1,18 +1,21 @@
 ﻿using Polygbot.Handlers;
-using Telegram.Bot.Types.Enums;
+using Polygbot.Models;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Mistral.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace Polygbot
 {
     public class BotService
     {
+        private UserSettings _userSettings;
+
         private readonly TelegramBotClient _botClient;
 
         public BotService()
         {
             _botClient = new TelegramBotClient("7561146572:AAF5tBL8fQpMZMy_W-VTpAur25qoe2rh1bQ");
+            _userSettings = new UserSettings();
         }
 
         public async Task StartAsync()
@@ -36,14 +39,18 @@ namespace Polygbot
 
                 if (message.Text.StartsWith("/start"))
                 {
-                    await CommandHandler.HandleStartCommand(botClient, message);
+                    await CommandHandler.HandlerStartCommand(botClient, message);
                 }
                 else if (message.Text.StartsWith("/settings"))
                 {
-                    await CommandHandler.HandleSettingsCommand(botClient, message);
+                    await CommandHandler.HandlerSettingsCommand(botClient, message);
+                }
+                else if (message.Text.StartsWith("/ai"))
+                {
+                    await CommandHandler.HandlerAiCommand(botClient, message);
                 }
 
-                Console.WriteLine($"Пользователь {message.Chat.Username ?? message.Chat.FirstName}({message.Chat.Id}) выбрал команду: \"{message.Text}\"");
+                Console.WriteLine($"{message.Chat.Username ?? message.Chat.FirstName}({message.Chat.Id}) выбрал команду: \"{message.Text}\"");
             }
 
             // Обработка callback-данных
@@ -52,7 +59,7 @@ namespace Polygbot
                 var callbackQuery = update.CallbackQuery;
                 var message = callbackQuery.Message;
 
-                if (callbackQuery.Data.StartsWith("language_"))
+                if (callbackQuery.Data.StartsWith("lang_"))
                 {
                     await HandleLanguageSelection(botClient, callbackQuery);
                 }
@@ -64,11 +71,27 @@ namespace Polygbot
                 {
                     await HandleDifficultySelection(botClient, callbackQuery);
                 }
-                else if (callbackQuery.Data == "settings_done")
+                //else if (callbackQuery.Data.StartsWith("settings_back"))
+                //{
+
+                //}
+                if (callbackQuery.Data == "settings_done")
                 {
                     await FinishSettings(botClient, callbackQuery);
                 }
+
+                Console.WriteLine($"{message.Chat.Username ?? message.Chat.FirstName}({message.Chat.Id}) выбрал {callbackQuery.Data}");
             }
+        }
+
+        /// <summary>
+        /// Обработка выбора настроек
+        /// </summary>
+        private async Task HandleSettingsSelection(ITelegramBotClient botClient, CallbackQuery callbackQuery)
+        {
+            await botClient.EditMessageText(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId,
+                $"🔔 В какое время отправлять новые слова?",
+                replyMarkup: SettingsHandler.GetTimeKeyboard());
         }
 
         /// <summary>
@@ -76,14 +99,9 @@ namespace Polygbot
         /// </summary>
         private async Task HandleLanguageSelection(ITelegramBotClient botClient, CallbackQuery callbackQuery)
         {
-            var selectedLanguage = callbackQuery.Data.Substring(5);
-            await botClient.AnswerCallbackQuery(callbackQuery.Id, $"Вы выбрали: {selectedLanguage}");
-
             await botClient.EditMessageText(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId,
                 $"🔔 В какое время отправлять новые слова?",
                 replyMarkup: SettingsHandler.GetTimeKeyboard());
-
-            Console.WriteLine($"Пользователь выбрал {selectedLanguage} язык");
         }
 
         /// <summary>
@@ -91,22 +109,17 @@ namespace Polygbot
         /// </summary>
         private async Task HandleTimeSelection(ITelegramBotClient botClient, CallbackQuery callbackQuery)
         {
-            var selectedTime = callbackQuery.Data.Substring(5);
-            await botClient.AnswerCallbackQuery(callbackQuery.Id, $"Вы выбрали: {selectedTime}");
-
             await botClient.EditMessageText(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId,
                 $"🟣 Какая сложность должна быть?",
                 replyMarkup: SettingsHandler.GetDifficultyKeyboard());
-
-            Console.WriteLine($"Пользователь выбрал {selectedTime} время");
         }
 
+        /// <summary>
+        /// Обработка выбора сложности
+        /// </summary>
         private async Task HandleDifficultySelection(ITelegramBotClient botClient, CallbackQuery callbackQuery)
         {
-            var selectedDifficulty = callbackQuery.Data.Substring(5);
-            await botClient.AnswerCallbackQuery(callbackQuery.Id, $"Вы выбрали: {selectedDifficulty}");
-
-            Console.WriteLine($"Пользователь выбрал {selectedDifficulty} сложность");
+            callbackQuery.Data = "settings_done";
         }
 
         /// <summary>

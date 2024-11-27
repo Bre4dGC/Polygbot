@@ -8,11 +8,11 @@ namespace Polygbot.Handlers
         {
             return new InlineKeyboardMarkup(
             [   
-                [InlineKeyboardButton.WithCallbackData("🎲 Рандом", "language_random")],
-                [InlineKeyboardButton.WithCallbackData("🇬🇧 Английский", "language_english")],
-                [InlineKeyboardButton.WithCallbackData("🇩🇪 Немецкий", "language_german")],
-                [InlineKeyboardButton.WithCallbackData("🇪🇸 Испанский", "language_spanish")],
-                [InlineKeyboardButton.WithCallbackData("🇫🇷 Французкий", "language_french")],
+                [InlineKeyboardButton.WithCallbackData("🎲 Рандом", "lang_random")],
+                [InlineKeyboardButton.WithCallbackData("🇬🇧 Английский", "lang_english")],
+                [InlineKeyboardButton.WithCallbackData("🇩🇪 Немецкий", "lang_german")],
+                [InlineKeyboardButton.WithCallbackData("🇪🇸 Испанский", "lang_spanish")],
+                [InlineKeyboardButton.WithCallbackData("🇫🇷 Французкий", "lang_french")],
                 [InlineKeyboardButton.WithCallbackData("Назад", "settings_back") ],
             ]);
         }
@@ -33,9 +33,9 @@ namespace Polygbot.Handlers
         {
             return new InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton.WithCallbackData("🟢 Легко", "difficult_easy")],
-                [InlineKeyboardButton.WithCallbackData("🟡 Средне", "difficult_medium")],
-                [InlineKeyboardButton.WithCallbackData("🔴 Сложно", "difficult_hard")],
+                [InlineKeyboardButton.WithCallbackData("🟢 Легко", "difficulty_easy")],
+                [InlineKeyboardButton.WithCallbackData("🟡 Средне", "difficulty_medium")],
+                [InlineKeyboardButton.WithCallbackData("🔴 Сложно", "difficulty_hard")],
                 [InlineKeyboardButton.WithCallbackData("Назад", "settings_back") ],
             ]);
         }
@@ -47,7 +47,7 @@ namespace Polygbot.Handlers
                 [InlineKeyboardButton.WithCallbackData("👅 Выбрать язык", "settings_language")],
                 [InlineKeyboardButton.WithCallbackData("⏰ Установить время", "settings_time")],
                 [InlineKeyboardButton.WithCallbackData("🟣 Выбрать сложность", "settings_difficult")],
-                [InlineKeyboardButton.WithCallbackData("Назад", "settings_back") ],
+                [InlineKeyboardButton.WithCallbackData("Назад", "back") ],
             ]);
         }
     }
